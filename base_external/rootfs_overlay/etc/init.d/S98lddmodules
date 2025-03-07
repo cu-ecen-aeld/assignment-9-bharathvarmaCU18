@@ -1,0 +1,72 @@
+#!/bin/sh
+
+# Path to module loading/unloading scripts
+SCULL_LOAD=/usr/bin/scull_load
+SCULL_UNLOAD=/usr/bin/scull_unload
+MODULE_LOAD=/usr/bin/module_load
+MODULE_UNLOAD=/usr/bin/module_unload
+
+case "$1" in
+  start)
+    echo "Loading LDD modules:"
+    
+    # Change working directory to /etc/init.d/
+    echo "Changing working directory to /etc/init.d/"
+    cd /etc/init.d || exit 1
+    
+    
+    # Load scull driver
+    echo "Loading scull driver"
+    if [ -x ${SCULL_LOAD} ]; then
+        ${SCULL_LOAD}
+    else
+        echo "Error: ${SCULL_LOAD} script not found or not executable"
+    fi
+    
+    # Load faulty driver
+    echo "Loading faulty driver"
+    if [ -x ${MODULE_LOAD} ]; then
+        ${MODULE_LOAD} faulty
+    else
+        echo "Error: ${MODULE_LOAD} script not found or not executable"
+    fi
+    
+    # Load hello module
+    echo "Loading hello module"
+    modprobe hello.ko
+    ;;
+  stop)
+    echo "Unloading LDD modules:"
+    
+    # Unload hello module
+    echo "Unloading hello module"
+    rmmod hello.ko
+    
+    
+    # Change working directory to /etc/init.d/
+    echo "Changing working directory to /etc/init.d/"
+    cd /etc/init.d || exit 1
+    
+    # Unload faulty driver
+    echo "Unloading faulty driver"
+    if [ -x ${MODULE_UNLOAD} ]; then
+        ${MODULE_UNLOAD} faulty
+    else
+        echo "Error: ${MODULE_UNLOAD} script not found or not executable"
+    fi
+    
+    # Unload scull driver
+    echo "Unloading scull driver"
+    if [ -x ${SCULL_UNLOAD} ]; then
+        ${SCULL_UNLOAD}
+    else
+        echo "Error: ${SCULL_UNLOAD} script not found or not executable"
+    fi
+    ;;
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+esac
+
+exit 0
+

@@ -1,0 +1,6 @@
+
+config BR2_PACKAGE_LDD
+	bool "ldd"
+	help
+	   This package builds misc_modules and scull sub directories.
+	   This package installs the hello, scull, and faulty kernel modules from misc_modules and scull directory.
